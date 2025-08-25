@@ -1,5 +1,6 @@
 from base import Exchange, Trade, Order, Product, Msg, Rest
 from typing import List, Dict
+import csv, os
 
 class PlayerAlgorithm:
     """
@@ -21,7 +22,11 @@ class PlayerAlgorithm:
         self.timestamp_num = 0
         self.bids = []
         self.asks = []
-    
+        self._csv_path = os.path.join(os.path.dirname(__file__), "prices.csv")
+        self._csv_f = open(self._csv_path, "w", newline="")
+        self._csv = csv.writer(self._csv_f)
+        self._csv.writerow(["Bids", "Asks"])
+        self._rows = 0
                  # Counter to track the number of timestamps completed
 
         # Initialize any other global variables you may need here
@@ -82,8 +87,12 @@ class PlayerAlgorithm:
         if book["UEC"]["Asks"]:
             self.asks.append(book["UEC"]["Asks"][0].price)
         else:
-            self.asks.append(None)    
-        
+            self.asks.append(None)
+                
+        bb = self.bids[-1]
+        ba = self.asks[-1]
+        self._csv.writerow([bb, ba])
+
         self.timestamp_num += 1
         return messages
 
